@@ -11,15 +11,14 @@ endeavour to review incoming issues and pull requests within 10 days, and will
 close any lingering issues or pull requests after 60 days of inactivity.
 
 Please note that all of your interactions in the project are subject to our
-[Code of Conduct](CODE_OF_CONDUCT.md). This includes creation of issues or pull
+[**Code of Conduct**][code of conduct]. This includes creation of issues or pull
 requests, commenting on issues or pull requests, and extends to all interactions
 in any real-time space (eg. Slack, Discord, etc).
 
-## Reporting Issues
+## 🐛 Reporting Bugs
 
 Before reporting a new issue, please ensure that the issue was not already
-reported or fixed by searching through our
-[issues list](https://github.com/wayfair-incubator/java-froid/issues).
+reported or fixed by searching through our [**Bugs**][bugs].
 
 When creating a new issue, please be sure to include a **title and clear
 description**, as much relevant information as possible, and, if possible, a
@@ -27,6 +26,13 @@ test case.
 
 **If you discover a security bug, please do not report it through GitHub.
 Instead, please see security procedures in [SECURITY.md](SECURITY.md).**
+
+### 💡 Feature Requests
+
+Please file an issue to suggest new features. Vote on feature requests by adding
+a 👍. This helps maintainers prioritize what to work on.
+
+[**See Feature Requests**][requests]
 
 ## Sending Pull Requests
 
@@ -37,6 +43,8 @@ if the change was already implemented but not yet released.
 We expect new pull requests to include tests for any affected behavior, and, as
 we follow semantic versioning, we may reserve breaking changes until the next
 major version release.
+
+Looking to contribute? Look for the [Good First Issue][good-first-issue] label.
 
 ## Other Ways to Contribute
 
@@ -58,3 +66,11 @@ Thanks again for your interest on contributing to
 `Java - Federated Relay Object Identification`!
 
 :heart:
+
+[bugs]:
+  https://github.com/wayfair-incubator/java-froid/issues?q=is%3Aissue+is%3Aopen+label%3Abug+sort%3Acreated-desc
+[requests]:
+  https://github.com/wayfair-incubator/java-froid/issues?q=is%3Aissue+sort%3Areactions-%2B1-desc+label%3Aenhancement+is%3Aopen
+[good-first-issue]:
+  https://github.com/wayfair-incubator/java-froid/issues?utf8=✓&q=is%3Aissue+is%3Aopen+sort%3Areactions-%2B1-desc+label%3A"good+first+issue"+
+[code of conduct]: CODE_OF_CONDUCT.md
