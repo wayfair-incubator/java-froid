@@ -7,45 +7,36 @@
 
 ## About The Project
 
-Provide some information about what the project is/does.
+### The problem
+
+There isn't good support for the Relay's [Object Identification] spec in the
+Federated GraphQL ecosystem. This makes it difficult to support common patterns
+used to refrech objects from your graph to power things like cache TTLs and
+cache-miss hydration.
+
+### The solution
+
+`@wayfair/java-froid` provides a key piece of functionality to the java
+ecosystem:
+
+- **id processing**: a solution that can be used to run a java-based subgraph
+  dedicated to service your object identification implementation.
+
+In order to support generation the schema needed to associate your java subgraph
+with all entities that need `id` generation support, please see our [NodeJS
+Froid] library.
 
 ## Getting Started
 
-To get a local copy up and running follow these simple steps.
+@TODO
 
-### Prerequisites
+## Library API
 
-This is an example of how to list things you need to use the software and how to
-install them.
-
-- npm
-
-  ```sh
-  npm install npm@latest -g
-  ```
-
-### Installation
-
-1. Clone the repo
-
-   ```sh
-   git clone https://github.com/wayfair-incubator/java-froid.git
-   ```
-
-2. Install NPM packages
-
-   ```sh
-   npm install
-   ```
+@TODO
 
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional
-screenshots, code examples and demos work well in this space. You may also link
-to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com) or
-the [Wiki](https://github.com/wayfair-incubator/java-froid/wiki)_
+@TODO
 
 ## Roadmap
 
@@ -61,7 +52,8 @@ appreciated**. For detailed contributing guidelines, please see
 
 ## License
 
-Distributed under the `MIT` License. See `LICENSE` for more information.
+Distributed under the `MIT` License. See [`LICENSE`][license] for more
+information.
 
 ## Contact
 
@@ -74,3 +66,8 @@ Project Link:
 
 This template was adapted from
 [https://github.com/othneildrew/Best-README-Template](https://github.com/othneildrew/Best-README-Template).
+
+[license]: https://github.com/wayfair-incubator/java-froid/blob/main/LICENSE
+[object identification]:
+  https://relay.dev/docs/guides/graphql-server-specification/#object-identification
+[nodejs froid]: https://github.com/wayfair-incubator/node-froid
