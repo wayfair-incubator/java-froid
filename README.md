@@ -1,4 +1,4 @@
-# Open Source Project Template
+# `java-froid`: Java - Federated Relay Object Identification
 
 [![Release](https://img.shields.io/github/v/release/wayfair-incubator/java-froid?display_name=tag)](CHANGELOG.md)
 [![Lint](https://github.com/wayfair-incubator/java-froid/actions/workflows/lint.yml/badge.svg?branch=main)](https://github.com/wayfair-incubator/java-froid/actions/workflows/lint.yml)
