@@ -10,3 +10,10 @@ and this project adheres to
 
 ### TBA
 
+## [0.1.0] - 2022-10-01
+
+### Added
+
+- Add initial library API:
+  - `handleFroidRequest`: Handles both `id` generation as well as `node` field
+    parsing of Object Identification requests in Federation.
