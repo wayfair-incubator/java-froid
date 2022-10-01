@@ -52,7 +52,7 @@ public class FroidService {
    * @param request The GraphQL request.
    * @return The response
    */
-  public Object handle(Request request) {
+  public Object handleFroidRequest(Request request) {
 
     try {
       final Document document = parser.parseDocument(request.getQuery());
