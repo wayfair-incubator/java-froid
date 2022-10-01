@@ -1,8 +1,7 @@
 package com.wayfair.javafroid.model;
 
-import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wayfair.javafroid.model.Error.Builder;
+import java.util.List;
 
 public class EntityList {
 

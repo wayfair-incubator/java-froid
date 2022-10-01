@@ -2,7 +2,6 @@ package com.wayfair.javafroid.model;
 
 import java.util.List;
 import java.util.Map;
-import com.wayfair.javafroid.model.Error.Builder;
 
 public class EntityObjectResponse {
   private Map<String, Object> data;

@@ -1,13 +1,7 @@
 package com.wayfair.javafroid;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import static com.wayfair.javafroid.ThrowingFunction.unchecked;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wayfair.javafroid.model.EntitiesResponse;
 import com.wayfair.javafroid.model.Entity;
@@ -22,8 +16,14 @@ import graphql.language.StringValue;
 import graphql.language.VariableReference;
 import graphql.parser.Parser;
 import graphql.relay.Relay.ResolvedGlobalId;
-
-import static com.wayfair.javafroid.ThrowingFunction.unchecked;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class FroidService {
 
@@ -38,9 +38,12 @@ public class FroidService {
   private final Froid.Encoder froidEncoder;
   private final Froid.Decoder froidDecoder;
 
+  private final Froid.DocumentProvider documentProvider;
+
   public FroidService(Froid froid) {
     this.froidEncoder = froid.encoder();
     this.froidDecoder = froid.decoder();
+    this.documentProvider = froid.documentProvider();
     parser = new Parser();
     mapper = new ObjectMapper();
   }
@@ -55,7 +58,7 @@ public class FroidService {
   public Object handleFroidRequest(Request request) {
 
     try {
-      final Document document = parser.parseDocument(request.getQuery());
+      final Document document = documentProvider.apply(request.getQuery(), query -> parser.parseDocument(query));
 
       if (request.getVariables() != null && request.getVariables().containsKey(REPRESENTATIONS)) {
         List<Map<String, Object>> representations = (List<Map<String, Object>>) request.getVariables().get(REPRESENTATIONS);
@@ -71,7 +74,7 @@ public class FroidService {
             .orElseThrow(() -> new RuntimeException("failed to generate entity objects"));
       }
     } catch (Exception e) {
-      StringBuilder message = new StringBuilder("NODE RELAY ERROR");
+      StringBuilder message = new StringBuilder("NODE RELAY ERROR ");
 
       message
           .append("message: ").append(e.getMessage())
@@ -129,7 +132,7 @@ public class FroidService {
    * @throws IOException Any JSON parsing errors
    */
   public EntityObjectResponse generateEntityObjectsById(Node root, Map<String, Object> variables) throws IOException {
-    HashMap<String, Object> mapped = new HashMap<String, Object>();
+    HashMap<String, Object> mapped = new HashMap<>();
     visitFields(root, variables, mapped);
     return EntityObjectResponse.builder().setData(mapped).build();
   }

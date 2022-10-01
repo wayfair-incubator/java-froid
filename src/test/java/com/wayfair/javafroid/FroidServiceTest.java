@@ -1,16 +1,15 @@
 package com.wayfair.javafroid;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.wayfair.javafroid.model.EntitiesResponse;
+import com.wayfair.javafroid.model.EntityObjectResponse;
+import com.wayfair.javafroid.model.Request;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.wayfair.javafroid.model.EntitiesResponse;
-import com.wayfair.javafroid.model.EntityObjectResponse;
-import com.wayfair.javafroid.model.Request;
-import graphql.com.google.common.collect.Maps;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class FroidServiceTest {
 
@@ -20,6 +19,7 @@ class FroidServiceTest {
   private static String DEMO_BOOK_2 = "RGVtb0Jvb2s6ZXlKaWIyOXJTV1FpT2pKOQ==";
 
   private FroidService service = new FroidService(new Froid() {
+
     @Override
     public Encoder encoder() {
       return decoded -> decoded;
@@ -28,6 +28,14 @@ class FroidServiceTest {
     @Override
     public Decoder decoder() {
       return encoded -> encoded;
+    }
+
+    @Override
+    public DocumentProvider documentProvider() {
+      return (query, parseFunction) -> {
+        // maybe do a cache lookup here...
+        return parseFunction.apply(query);
+      };
     }
   });
 

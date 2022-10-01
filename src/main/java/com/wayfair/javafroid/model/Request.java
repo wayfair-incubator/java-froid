@@ -1,7 +1,6 @@
 package com.wayfair.javafroid.model;
 
 import java.util.Map;
-import com.wayfair.javafroid.model.Error.Builder;
 
 public class Request {
   private String query;

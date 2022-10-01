@@ -1,7 +1,5 @@
 package com.wayfair.javafroid.model;
 
-import com.wayfair.javafroid.model.Error.Builder;
-
 public class Location {
 
   private int line;

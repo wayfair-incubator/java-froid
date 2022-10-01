@@ -1,7 +1,6 @@
 package com.wayfair.javafroid.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wayfair.javafroid.model.Error.Builder;
 
 public class Entity {
   @JsonProperty("__typename")
