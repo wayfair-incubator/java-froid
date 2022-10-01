@@ -1,5 +1,6 @@
 package com.wayfair.javafroid.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EntitiesResponse {
@@ -42,6 +43,14 @@ public class EntitiesResponse {
 
     public Builder setData(EntityList data) {
       this.data = data;
+      return this;
+    }
+
+    public Builder setError(Error error) {
+      if (errors == null) {
+        errors = new ArrayList<>();
+      }
+      errors.add(error);
       return this;
     }
 

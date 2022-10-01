@@ -1,6 +1,12 @@
 package com.wayfair.javafroid;
 
 public interface Froid {
+
+
+  interface DocumentProvider {
+
+  }
+
   interface Encoder {
     byte[] encode(byte[] decoded);
   }

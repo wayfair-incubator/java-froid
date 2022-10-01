@@ -9,8 +9,8 @@
   <description>Java Federated Relay Object Identification</description>
 
   <properties>
-    <java.version>11</java.version>
-    <java.release>11</java.release>
+    <java.source>1.8</java.source>
+    <java.target>1.8</java.target>
     <graphql.java.version>19.2</graphql.java.version>
     <jackson.version>2.14.0-rc1</jackson.version>
     <junit.version>5.9.1</junit.version>
@@ -55,8 +55,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven-compiler-plugin.version}</version>
         <configuration>
-          <source>${java.version}</source>
-          <target>${java.release}</target>
+          <source>${java.source}</source>
+          <target>${java.target}</target>
         </configuration>
       </plugin>
       <plugin>

@@ -58,7 +58,7 @@ public class FroidService {
       final Document document = parser.parseDocument(request.getQuery());
 
       if (request.getVariables() != null && request.getVariables().containsKey(REPRESENTATIONS)) {
-        var representations = (List<Map<String, Object>>) request.getVariables().get(REPRESENTATIONS);
+        List<Map<String, Object>> representations = (List<Map<String, Object>>) request.getVariables().get(REPRESENTATIONS);
         return generateEntityObjectWithId(representations);
       } else {
 
@@ -68,17 +68,17 @@ public class FroidService {
             .map(unchecked(node -> generateEntityObjectsById(
                 node,
                 request.getVariables())))
-            .orElseThrow();
+            .orElseThrow(() -> new RuntimeException("failed to generate entity objects"));
       }
     } catch (Exception e) {
-      var message = new StringBuilder("NODE RELAY ERROR");
+      StringBuilder message = new StringBuilder("NODE RELAY ERROR");
 
       message
           .append("message: ").append(e.getMessage())
           .append("Class: ").append(e.getClass().getName());
 
       return EntitiesResponse.builder()
-          .setErrors(List.of(Error.builder().setMessage(message.toString()).build()))
+          .setError(Error.builder().setMessage(message.toString()).build())
           .build();
     }
   }
@@ -93,16 +93,16 @@ public class FroidService {
    * @return The EntitiesResponse
    */
   public EntitiesResponse generateEntityObjectWithId(List<Map<String, Object>> representations) {
-    var entities = representations
+    List<Entity> entities = representations
         .stream()
         .map(unchecked(e -> {
-          var typeName = e.get(TYPE_NAME).toString();
-          var data = e.entrySet()
+          String typeName = e.get(TYPE_NAME).toString();
+          Map<Object, Object> data = e.entrySet()
               .stream()
               .filter(it -> !it.getKey().equals(TYPE_NAME))
               .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-          var encoded = froidEncoder.encode(mapper.writeValueAsBytes(data));
+          byte[] encoded = froidEncoder.encode(mapper.writeValueAsBytes(data));
 
           return Entity.builder()
               .setTypeName(typeName)
@@ -129,7 +129,7 @@ public class FroidService {
    * @throws IOException Any JSON parsing errors
    */
   public EntityObjectResponse generateEntityObjectsById(Node root, Map<String, Object> variables) throws IOException {
-    var mapped = new HashMap<String, Object>();
+    HashMap<String, Object> mapped = new HashMap<String, Object>();
     visitFields(root, variables, mapped);
     return EntityObjectResponse.builder().setData(mapped).build();
   }
@@ -148,7 +148,7 @@ public class FroidService {
         .findFirst()
         .map(idArg -> {
           if (idArg.getValue() instanceof VariableReference) {
-            var variableName = ((VariableReference) idArg.getValue()).getName();
+            String variableName = ((VariableReference) idArg.getValue()).getName();
             return variables.get(variableName).toString();
           } else if (idArg.getValue() instanceof StringValue) {
             return ((StringValue) idArg.getValue()).getValue();
@@ -169,20 +169,20 @@ public class FroidService {
   private void visitFields(Node node, Map<String, Object> variables, Map<String, Object> out) throws IOException {
 
     if (node instanceof Field) {
-      var field = (Field) node;
+      Field field = (Field) node;
       // if this is a node field, and it has an id argument take it.
 
       if (field.getName().equals(NODE)) {
-        var idValue = findIdValue(field, variables);
+        Optional<String> idValue = findIdValue(field, variables);
 
         if (idValue.isPresent()) {
-          var nodeName = field.getName();
-          var nodeAlias = field.getAlias();
-          var responseFieldName = (nodeAlias != null && !nodeAlias.isEmpty()) ? nodeAlias : nodeName;
-          var globalId = fromGlobalId(idValue.get());
-          var base64Decoded = base64Decoder.decode(globalId.getId());
-          var froidDecoded = froidDecoder.decode(base64Decoded);
-          var data = mapper.readValue(froidDecoded, Map.class);
+          String nodeName = field.getName();
+          String nodeAlias = field.getAlias();
+          String responseFieldName = (nodeAlias != null && !nodeAlias.isEmpty()) ? nodeAlias : nodeName;
+          ResolvedGlobalId globalId = fromGlobalId(idValue.get());
+          byte[] base64Decoded = base64Decoder.decode(globalId.getId());
+          byte[] froidDecoded = froidDecoder.decode(base64Decoded);
+          Map data = mapper.readValue(froidDecoded, Map.class);
           data.put(TYPE_NAME, globalId.getType());
           out.put(responseFieldName, data);
         }
