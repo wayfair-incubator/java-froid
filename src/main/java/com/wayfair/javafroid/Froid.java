@@ -194,10 +194,10 @@ public class Froid {
           out.put(responseFieldName, data);
         }
       }
-    }
-
-    for (Node child : (List<Node>) node.getChildren()) {
-      visitFields(child, variables, out);
+    } else {
+      for (Node child : (List<Node>) node.getChildren()) {
+        visitFields(child, variables, out);
+      }
     }
   }
 
