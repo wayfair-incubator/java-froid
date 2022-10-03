@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-class FroidServiceTest {
+class FroidTest {
 
   private static String DEMO_AUTHOR_1 = "RGVtb0F1dGhvcjpleUpoZFhSb2IzSkpaQ0k2TVgwPQ==";
   private static String DEMO_AUTHOR_4 = "RGVtb0F1dGhvcjpleUpoZFhSb2IzSkpaQ0k2TkgwPQ==";
