@@ -11,33 +11,14 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 
-class FroidServiceTest {
+class FroidTest {
 
   private static String DEMO_AUTHOR_1 = "RGVtb0F1dGhvcjpleUpoZFhSb2IzSkpaQ0k2TVgwPQ==";
   private static String DEMO_AUTHOR_4 = "RGVtb0F1dGhvcjpleUpoZFhSb2IzSkpaQ0k2TkgwPQ==";
   private static String DEMO_BOOK_1 = "RGVtb0Jvb2s6ZXlKaWIyOXJTV1FpT2pGOQ==";
   private static String DEMO_BOOK_2 = "RGVtb0Jvb2s6ZXlKaWIyOXJTV1FpT2pKOQ==";
 
-  private FroidService service = new FroidService(new Froid() {
-
-    @Override
-    public Encoder encoder() {
-      return decoded -> decoded;
-    }
-
-    @Override
-    public Decoder decoder() {
-      return encoded -> encoded;
-    }
-
-    @Override
-    public DocumentProvider documentProvider() {
-      return (query, parseFunction) -> {
-        // maybe do a cache lookup here...
-        return parseFunction.apply(query);
-      };
-    }
-  });
+  private Froid service = Froid.builder().build();
 
   @Test
   void testEntitiesResponse() {
