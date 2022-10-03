@@ -3,7 +3,6 @@ package com.wayfair.javafroid;
 import static com.wayfair.javafroid.ThrowingFunction.unchecked;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.tools.javac.jvm.Code;
 import com.wayfair.javafroid.model.EntitiesResponse;
 import com.wayfair.javafroid.model.Entity;
 import com.wayfair.javafroid.model.EntityList;
