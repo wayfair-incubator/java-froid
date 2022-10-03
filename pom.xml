@@ -32,6 +32,27 @@
     </dependencies>
   </dependencyManagement>
 
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Richard Jose</name>
+      <email>rjose@wayfair.com</email>
+      <organization>Wayfair</organization>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git@github.com:wayfair-incubator/java-froid.git</connection>
+    <url>scm:git:git@github.com:wayfair-incubator/java-froid.git</url>
+    <developerConnection>scm:git:git@github.com:wayfair-incubator/java-froid.git</developerConnection>
+  </scm>
+
   <dependencies>
     <dependency>
       <groupId>com.graphql-java</groupId>
