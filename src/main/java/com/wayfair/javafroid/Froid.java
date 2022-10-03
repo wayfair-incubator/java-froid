@@ -93,8 +93,8 @@ public class Froid {
   /**
    * Map a List of GraphQL representations to entity objects.
    * Each Entity has two properties:  __typename, id.
-   * The id property is computed by Base64 encoding a string
-   * comprised of [__typename>]:json_str(representation fields).
+   * The id property is computed by Base64 encoding the JSON byte representation.
+   * Froid can be configured with an additional encoder applied to the JSON byte reprsentation.
    *
    * @param representations List of representation objects
    * @return The EntitiesResponse
