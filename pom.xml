@@ -71,6 +71,12 @@
     </plugins>
   </build>
 
+  <scm>
+    <connection>scm:git:git@github.com:wayfair-incubator/java-froid.git</connection>
+    <url>scm:git:git@github.com:wayfair-incubator/java-froid.git</url>
+    <developerConnection>scm:git:git@github.com:wayfair-incubator/java-froid.git</developerConnection>
+  </scm>
+
   <licenses>
     <license>
       <name>MIT License</name>
