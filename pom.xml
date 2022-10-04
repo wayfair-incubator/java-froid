@@ -19,6 +19,7 @@
     <maven-javadoc-plugin.verion>3.3.1</maven-javadoc-plugin.verion>
     <maven-surefire-plugin.version>3.0.0-M6</maven-surefire-plugin.version>
     <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
+    <nexus-staging-maven-plugin.version>1.6.8</nexus-staging-maven-plugin.version>
   </properties>
 
   <dependencyManagement>
@@ -85,12 +86,6 @@
     </developer>
   </developers>
 
-  <scm>
-    <connection>scm:git:git@github.com:wayfair-incubator/java-froid.git</connection>
-    <url>scm:git:git@github.com:wayfair-incubator/java-froid.git</url>
-    <developerConnection>scm:git:git@github.com:wayfair-incubator/java-froid.git</developerConnection>
-  </scm>
-
   <distributionManagement>
     <repository>
       <id>ossrh</id>
@@ -103,6 +98,17 @@
       <id>release</id>
       <build>
         <plugins>
+          <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>${nexus-staging-maven-plugin.version}</version>
+            <extensions>true</extensions>
+            <configuration>
+              <serverId>ossrh</serverId>
+              <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+            </configuration>
+          </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
