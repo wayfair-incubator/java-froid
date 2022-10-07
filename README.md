@@ -28,15 +28,147 @@ Froid] library.
 
 ## Getting Started
 
-@TODO
+The `java-froid` dependency can be added to your Gradle or Maven configuration.
 
-## Library API
+### Gradle
 
-@TODO
+```groovy
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation "com.wayfair:java-froid:0.1.0"
+}
+```
+
+### Maven
+
+```xml
+
+<dependency>
+  <groupId>com.wayfair</groupId>
+  <artifactId>java-froid</artifactId>
+  <version>0.1.0</version>
+</dependency>
+```
+
+## Library
+
+### [Froid](src/main/java/com/wayfair/javafroid/Froid.java)
+
+This class implements the core api of the library: `handleFroidRequest(Request req)`.
+Pass it a [Request](src/main/java/com/wayfair/javafroid/model/Request.java) object and the library decides to decode IDs
+into Entities or encode Entities into IDs.
+
+### [Codec](src/main/java/com/wayfair/javafroid/Codec.java)
+
+Froid can be configured with a custom [Codec](src/main/java/com/wayfair/javafroid/Codec.java). During ID generation
+Entity keys are converted to a JSON structure and the bytes passed to the Codec.encode method. During Entity hydration
+the ID bytes are passed to the Codec.decode method.
+
+This is a convenient way to introduce encryption if your use-case requires it.
+
+### [DocumentProvider](src/main/java/com/wayfair/javafroid/DocumentProvider.java)
+
+Froid also supports a DocumentProvider class that enables you to introduce a cache.
+
+### [Froid.Builder](src/main/java/com/wayfair/javafroid/Froid.java)
+
+Froid provides a Builder class that will generate defaults for required arguments if not set.
+
+### [Model](src/main/java/com/wayfair/javafroid/model)
+
+This package models the federated graphql protocol for FROID.
 
 ## Usage
 
-@TODO
+The example below shows how to use Froid in a typical Spring Boot environment.
+Spring manages serializing the request body into Froid [Request](src/main/java/com/wayfair/javafroid/model/Request.java)
+object.
+
+```java
+import com.wayfair.javafroid.Froid;
+import com.wayfair.javafroid.model.Request;
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class GraphqlController {
+
+  private final Froid froid = Froid.builder().build();
+
+  @Operation(summary = "Swagger/OpenAPI info for graphql endpoint")
+  @PostMapping(value = "/graphql", produces = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseBody
+  public Object graphql(@RequestBody Request request) {
+    return froid.handleFroidRequest(request);
+  }
+}
+```
+
+A more advanced setup with a DocumentProvider for caching and custom codec for encryption/decryption.
+
+```java
+
+@Service
+public class FroidCodec implements Codec {
+  @Override
+  public byte[] encode(byte[] bytes) {
+    return someEncryption(bytes);
+  }
+
+  @Override
+  public byte[] decode(byte[] bytes) {
+    return someDecryption(bytes);
+  }
+}
+```
+
+```java
+
+@Configuration
+public class CacheConfig {
+  @Bean
+  public DocumentProvider documentProvider() {
+    Cache<Long, Document> cache = Caffeine.newBuilder().maximumSize(1_000_000).build();
+    return (query, documentProvider) -> {
+      long queryKey = MurmurHash3.hash64(query.getBytes(StandardCharsets.UTF_8));
+      return cache.get(queryKey, key -> documentProvider.apply(query));
+    };
+  }
+
+}
+```
+
+```java
+
+@RestController
+public class GraphqlController {
+
+  private final Froid froid;
+
+  public GraphqlController(FroidCodec codec, DocumentProvider documentProvider) {
+    froid = Froid
+        .builder()
+        .setCodec(codec)
+        .setDocumentProvider(documentProvider)
+        .build();
+  }
+
+  @Operation(summary = "Swagger/OpenAPI info for graphql endpoint")
+  @PostMapping(value = "/graphql", produces = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseBody
+  public Object graphql(@RequestBody Request request) {
+    return froid.handleFroidRequest(request);
+  }
+}
+```
 
 ## Roadmap
 
@@ -68,6 +200,8 @@ This template was adapted from
 [https://github.com/othneildrew/Best-README-Template](https://github.com/othneildrew/Best-README-Template).
 
 [license]: https://github.com/wayfair-incubator/java-froid/blob/main/LICENSE
+
 [object identification]:
-  https://relay.dev/docs/guides/graphql-server-specification/#object-identification
+https://relay.dev/docs/guides/graphql-server-specification/#object-identification
+
 [nodejs froid]: https://github.com/wayfair-incubator/node-froid
