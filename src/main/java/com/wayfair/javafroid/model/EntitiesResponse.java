@@ -3,7 +3,7 @@ package com.wayfair.javafroid.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EntitiesResponse {
+public class EntitiesResponse implements BaseResponse {
 
   private EntityList data;
   private List<Error> errors;

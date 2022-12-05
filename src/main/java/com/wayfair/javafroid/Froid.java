@@ -191,6 +191,7 @@ public class Froid {
           byte[] froidDecoded = codec.decode(base64Decoded);
           Map data = mapper.readValue(froidDecoded, Map.class);
           data.put(TYPE_NAME, globalId.getType());
+          data.put(ID, idValue.get());
           out.put(responseFieldName, data);
         }
       }

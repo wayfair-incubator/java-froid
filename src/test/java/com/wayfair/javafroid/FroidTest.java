@@ -78,10 +78,13 @@ class FroidTest {
 
     assertEquals("DemoAuthor", ((Map) response.getData().get("a")).get("__typename"));
     assertEquals(4, ((Map) response.getData().get("a")).get("authorId"));
+    assertEquals(DEMO_AUTHOR_4, ((Map) response.getData().get("a")).get("id"));
     assertEquals("DemoAuthor", ((Map) response.getData().get("b")).get("__typename"));
     assertEquals(1, ((Map) response.getData().get("b")).get("authorId"));
+    assertEquals(DEMO_AUTHOR_1, ((Map) response.getData().get("b")).get("id"));
     assertEquals("DemoBook", ((Map) response.getData().get("c")).get("__typename"));
     assertEquals(2, ((Map) response.getData().get("c")).get("bookId"));
+    assertEquals(DEMO_BOOK_2, ((Map) response.getData().get("c")).get("id"));
   }
 
   @Test
