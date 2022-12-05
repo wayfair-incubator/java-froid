@@ -3,17 +3,17 @@ package com.wayfair.javafroid.model;
 import java.util.List;
 import java.util.Map;
 
-public class EntityObjectResponse {
+public class EntityObjectResponse implements BaseResponse {
   private Map<String, Object> data;
-  private List<Error> error;
+  private List<Error> errors;
   private Map<String, Object> extensions;
 
   public EntityObjectResponse() {
   }
 
-  public EntityObjectResponse(Map<String, Object> data, List<Error> error, Map<String, Object> extensions) {
+  public EntityObjectResponse(Map<String, Object> data, List<Error> errors, Map<String, Object> extensions) {
     this.data = data;
-    this.error = error;
+    this.errors = errors;
     this.extensions = extensions;
   }
 
@@ -21,8 +21,8 @@ public class EntityObjectResponse {
     return data;
   }
 
-  public List<Error> getError() {
-    return error;
+  public List<Error> getErrors() {
+    return errors;
   }
 
   public Map<String, Object> getExtensions() {
@@ -33,8 +33,8 @@ public class EntityObjectResponse {
     this.data = data;
   }
 
-  public void setError(List<Error> error) {
-    this.error = error;
+  public void setErrors(List<Error> errors) {
+    this.errors = errors;
   }
 
   public void setExtensions(Map<String, Object> extensions) {
