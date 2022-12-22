@@ -2,7 +2,9 @@ package com.wayfair.javafroid;
 
 import static com.wayfair.javafroid.ThrowingFunction.unchecked;
 
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.wayfair.javafroid.model.EntitiesResponse;
 import com.wayfair.javafroid.model.Entity;
 import com.wayfair.javafroid.model.EntityList;
@@ -49,6 +51,9 @@ public class Froid {
     this.mapper = mapper;
     this.codec = codec;
     this.documentProvider = documentProvider;
+    this.mapper.configure(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY, true);
+    this.mapper.enable(MapperFeature.SORT_PROPERTIES_ALPHABETICALLY);
+    this.mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
   }
 
   /**
@@ -109,6 +114,7 @@ public class Froid {
               .filter(it -> !it.getKey().equals(TYPE_NAME))
               .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
+          System.out.println(mapper.writeValueAsString(data));
           byte[] encoded = codec.encode(mapper.writeValueAsBytes(data));
 
           return Entity.builder()
