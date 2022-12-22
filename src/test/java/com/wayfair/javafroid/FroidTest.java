@@ -3,9 +3,12 @@ package com.wayfair.javafroid;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.wayfair.javafroid.model.EntitiesResponse;
+import com.wayfair.javafroid.model.Entity;
 import com.wayfair.javafroid.model.EntityObjectResponse;
 import com.wayfair.javafroid.model.Request;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,11 +19,18 @@ class FroidTest {
   private static String DEMO_AUTHOR_1 = "RGVtb0F1dGhvcjpleUpoZFhSb2IzSkpaQ0k2TVgwPQ==";
   private static String DEMO_AUTHOR_4 = "RGVtb0F1dGhvcjpleUpoZFhSb2IzSkpaQ0k2TkgwPQ==";
   private static String DEMO_BOOK_1 = "RGVtb0Jvb2s6ZXlKaWIyOXJTV1FpT2pGOQ==";
-  private static String DEMO_BOOK_COMPLEX_1 = "RGVtb0Jvb2s6ZXlKaWIyOXJTV1FpT2pFc0luQjFZbXhwYzJobGNpSTZleUpmWDNSNWNHVnVZVzFsSWpvaVJHVnRiMUIxWW14cGMyaGxjaUlzSW5CMVlteHBjMmhsY2tsa0lqb3hmWDA9";
   private static String DEMO_BOOK_2 = "RGVtb0Jvb2s6ZXlKaWIyOXJTV1FpT2pKOQ==";
-  private static String DEMO_BOOK_COMPLEX_2 = "RGVtb0Jvb2s6ZXlKaWIyOXJTV1FpT2pJc0luQjFZbXhwYzJobGNpSTZleUpmWDNSNWNHVnVZVzFsSWpvaVJHVnRiMUIxWW14cGMyaGxjaUlzSW5CMVlteHBjMmhsY2tsa0lqb3lmWDA9";
+  private Froid service = Froid.builder().setCodec(new Codec() {
+    @Override
+    public byte[] encode(byte[] decoded) {
+      return Base64.getEncoder().encode(decoded);
+    }
 
-  private Froid service = Froid.builder().build();
+    @Override
+    public byte[] decode(byte[] encoded) {
+      return Base64.getDecoder().decode(encoded);
+    }
+  }).build();
 
   @Test
   void testEntitiesResponse() {
@@ -64,24 +74,22 @@ class FroidTest {
     Request request = Request
         .builder()
         .setQuery("query booksByGenre__node_relay_service__1($representations:[_Any!]!) {"
-            + "_entities(representations:$representations){...on DemoBook{id}}"
+            + "_entities(representations:$representations){...on Sorted{id}}"
             + "}")
         .setVariables(new HashMap<String, Object>() {{
           put("representations", new ArrayList<Object>() {{
             add(new HashMap<String, Object>() {{
-              put("__typename", "DemoBook");
-              put("bookId", 1);
-              put("publisher", new HashMap<String, Object>() {{
-                put("__typename", "DemoPublisher");
-                put("publisherId", 1);
-              }});
-            }});
-            add(new HashMap<String, Object>() {{
-              put("__typename", "DemoBook");
-              put("bookId", 2);
-              put("publisher", new HashMap<String, Object>() {{
-                put("__typename", "DemoPublisher");
-                put("publisherId", 2);
+              put("__typename", "Sorted");
+              put("c", "3");
+              put("b", "2");
+              put("a", new HashMap<String, Object>() {{
+                put("c", "3");
+                put("a", "1");
+                put("b", new HashMap<String, Object>() {{
+                  put("b", "2");
+                  put("a", "1");
+                  put("c", "3");
+                }});
               }});
             }});
           }});
@@ -89,19 +97,16 @@ class FroidTest {
         .setOperationName("booksByGenre__node_relay_service__1")
         .build();
 
-    EntitiesResponse response = (EntitiesResponse) service.handleFroidRequest(request);
+    EntitiesResponse response = (EntitiesResponse) Froid.builder().build().handleFroidRequest(request);
 
-    assertEquals(2, response.getData().getEntities().size());
+    assertEquals(1, response.getData().getEntities().size());
 
-    List<String> ids = new ArrayList<String>() {{
-      add(DEMO_BOOK_COMPLEX_1);
-      add(DEMO_BOOK_COMPLEX_2);
-    }};
+    Entity entity = response.getData().getEntities().get(0);
 
-    for (int i = 0; i < response.getData().getEntities().size(); ++i) {
-      assertEquals("DemoBook", response.getData().getEntities().get(i).getTypeName());
-      assertEquals(ids.get(i), response.getData().getEntities().get(i).getId());
-    }
+    assertEquals("Sorted", entity.getTypeName());
+    assertEquals(
+        "U29ydGVkOnsiYSI6eyJhIjoiMSIsImIiOnsiYSI6IjEiLCJiIjoiMiIsImMiOiIzIn0sImMiOiIzIn0sImIiOiIyIiwiYyI6IjMifQ==",
+        entity.getId());
   }
 
   @Test
@@ -177,7 +182,6 @@ class FroidTest {
 
   @Test
   void testEntityObjectsValue() {
-    System.out.println("oooowww");
     Request request = Request
         .builder()
         .setQuery("query author__node_relay_service__0 {"
