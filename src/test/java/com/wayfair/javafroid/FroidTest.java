@@ -16,7 +16,9 @@ class FroidTest {
   private static String DEMO_AUTHOR_1 = "RGVtb0F1dGhvcjpleUpoZFhSb2IzSkpaQ0k2TVgwPQ==";
   private static String DEMO_AUTHOR_4 = "RGVtb0F1dGhvcjpleUpoZFhSb2IzSkpaQ0k2TkgwPQ==";
   private static String DEMO_BOOK_1 = "RGVtb0Jvb2s6ZXlKaWIyOXJTV1FpT2pGOQ==";
+  private static String DEMO_BOOK_COMPLEX_1 = "RGVtb0Jvb2s6ZXlKd2RXSnNhWE5vWlhJaU9uc2ljSFZpYkdsemFHVnlTV1FpT2pFc0lsOWZkSGx3Wlc1aGJXVWlPaUpFWlcxdlVIVmliR2x6YUdWeUluMHNJbUp2YjJ0SlpDSTZNWDA9";
   private static String DEMO_BOOK_2 = "RGVtb0Jvb2s6ZXlKaWIyOXJTV1FpT2pKOQ==";
+  private static String DEMO_BOOK_COMPLEX_2 = "RGVtb0Jvb2s6ZXlKd2RXSnNhWE5vWlhJaU9uc2ljSFZpYkdsemFHVnlTV1FpT2pJc0lsOWZkSGx3Wlc1aGJXVWlPaUpFWlcxdlVIVmliR2x6YUdWeUluMHNJbUp2YjJ0SlpDSTZNbjA9";
 
   private Froid service = Froid.builder().build();
 
@@ -49,6 +51,51 @@ class FroidTest {
     List<String> ids = new ArrayList<String>() {{
       add(DEMO_BOOK_1);
       add(DEMO_BOOK_2);
+    }};
+
+    for (int i = 0; i < response.getData().getEntities().size(); ++i) {
+      assertEquals("DemoBook", response.getData().getEntities().get(i).getTypeName());
+      assertEquals(ids.get(i), response.getData().getEntities().get(i).getId());
+    }
+  }
+
+  @Test
+  void testEntitiesResponseComplexKey() {
+    Request request = Request
+        .builder()
+        .setQuery("query booksByGenre__node_relay_service__1($representations:[_Any!]!) {"
+            + "_entities(representations:$representations){...on DemoBook{id}}"
+            + "}")
+        .setVariables(new HashMap<String, Object>() {{
+          put("representations", new ArrayList<Object>() {{
+            add(new HashMap<String, Object>() {{
+              put("__typename", "DemoBook");
+              put("bookId", 1);
+              put("publisher", new HashMap<String, Object>() {{
+                put("__typename", "DemoPublisher");
+                put("publisherId", 1);
+              }});
+            }});
+            add(new HashMap<String, Object>() {{
+              put("__typename", "DemoBook");
+              put("bookId", 2);
+              put("publisher", new HashMap<String, Object>() {{
+                put("__typename", "DemoPublisher");
+                put("publisherId", 2);
+              }});
+            }});
+          }});
+        }})
+        .setOperationName("booksByGenre__node_relay_service__1")
+        .build();
+
+    EntitiesResponse response = (EntitiesResponse) service.handleFroidRequest(request);
+
+    assertEquals(2, response.getData().getEntities().size());
+
+    List<String> ids = new ArrayList<String>() {{
+      add(DEMO_BOOK_COMPLEX_1);
+      add(DEMO_BOOK_COMPLEX_2);
     }};
 
     for (int i = 0; i < response.getData().getEntities().size(); ++i) {
