@@ -97,7 +97,7 @@ class FroidTest {
         .setOperationName("booksByGenre__node_relay_service__1")
         .build();
 
-    EntitiesResponse response = (EntitiesResponse) Froid.builder().build().handleFroidRequest(request);
+    EntitiesResponse response = (EntitiesResponse) service.handleFroidRequest(request);
 
     assertEquals(1, response.getData().getEntities().size());
 
@@ -105,7 +105,64 @@ class FroidTest {
 
     assertEquals("Sorted", entity.getTypeName());
     assertEquals(
-        "U29ydGVkOnsiYSI6eyJhIjoiMSIsImIiOnsiYSI6IjEiLCJiIjoiMiIsImMiOiIzIn0sImMiOiIzIn0sImIiOiIyIiwiYyI6IjMifQ==",
+        "U29ydGVkOmV5SmhJanA3SW1FaU9pSXhJaXdpWWlJNmV5SmhJam9pTVNJc0ltSWlPaUl5SWl3aVl5STZJak1pZlN3aVl5STZJak1pZlN3aVlpSTZJaklpTENKaklqb2lNeUo5",
+        entity.getId());
+  }
+
+  @Test
+  void testEntitiesResponseComplexKeyArrays() {
+    Request request = Request
+        .builder()
+        .setQuery("query booksByGenre__node_relay_service__1($representations:[_Any!]!) {"
+            + "_entities(representations:$representations){...on Sorted{id}}"
+            + "}")
+        .setVariables(new HashMap<String, Object>() {{
+          put("representations", new ArrayList<Object>() {{
+            add(new HashMap<String, Object>() {{
+              put("__typename", "Sorted");
+              put("c", "3");
+              put("b", "2");
+              put("a", new HashMap<String, Object>() {{
+                put("c", "3");
+                put("a", "1");
+                put("b", new HashMap<String, Object>() {{
+                  put("b", "2");
+                  put("a", "1");
+                  put("c", "3");
+                }});
+              }});
+              put("d", new ArrayList<Object>() {{
+                  add("z");
+                  add("1");
+                  add(new HashMap<String, Object>() {{
+                    put("b", "2");
+                    put("d", "4");
+                    put("a", "1");
+                  }});
+                  add(new HashMap<String, Object>() {{
+                    put("b", new ArrayList<Object>(){{
+                      add(new HashMap<String, Object>() {{
+                        put("c", "3");
+                        put("b", "2");
+                      }});
+                    }});
+                  }});
+                  add(new ArrayList<Object>(){{}});
+              }});
+            }});
+          }});
+        }})
+        .setOperationName("booksByGenre__node_relay_service__1")
+        .build();
+    EntitiesResponse response = (EntitiesResponse) service.handleFroidRequest(request);
+
+    assertEquals(1, response.getData().getEntities().size());
+
+    Entity entity = response.getData().getEntities().get(0);
+
+    assertEquals("Sorted", entity.getTypeName());
+    assertEquals(
+        "U29ydGVkOmV5SmhJanA3SW1FaU9pSXhJaXdpWWlJNmV5SmhJam9pTVNJc0ltSWlPaUl5SWl3aVl5STZJak1pZlN3aVl5STZJak1pZlN3aVlpSTZJaklpTENKaklqb2lNeUlzSW1RaU9sc2llaUlzSWpFaUxIc2lZU0k2SWpFaUxDSmlJam9pTWlJc0ltUWlPaUkwSW4wc2V5SmlJanBiZXlKaUlqb2lNaUlzSW1NaU9pSXpJbjFkZlN4YlhWMTk=",
         entity.getId());
   }
 
