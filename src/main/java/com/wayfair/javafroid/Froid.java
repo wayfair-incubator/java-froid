@@ -3,6 +3,7 @@ package com.wayfair.javafroid;
 import static com.wayfair.javafroid.ThrowingFunction.unchecked;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.wayfair.javafroid.model.EntitiesResponse;
 import com.wayfair.javafroid.model.Entity;
 import com.wayfair.javafroid.model.EntityList;
@@ -17,6 +18,7 @@ import graphql.language.VariableReference;
 import graphql.parser.Parser;
 import graphql.relay.Relay.ResolvedGlobalId;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
@@ -49,6 +51,7 @@ public class Froid {
     this.mapper = mapper;
     this.codec = codec;
     this.documentProvider = documentProvider;
+    this.mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
   }
 
   /**
@@ -113,7 +116,7 @@ public class Froid {
 
           return Entity.builder()
               .setTypeName(typeName)
-              .setId(toGlobalId(typeName, base64Encoder.encodeToString(encoded)))
+              .setId(toGlobalId(typeName, encoded))
               .build();
         })).collect(Collectors.toList());
 
@@ -186,9 +189,8 @@ public class Froid {
           String nodeName = field.getName();
           String nodeAlias = field.getAlias();
           String responseFieldName = (nodeAlias != null && !nodeAlias.isEmpty()) ? nodeAlias : nodeName;
-          ResolvedGlobalId globalId = fromGlobalId(idValue.get());
-          byte[] base64Decoded = base64Decoder.decode(globalId.getId());
-          byte[] froidDecoded = codec.decode(base64Decoded);
+          ResolvedGlobalId globalId = fromGlobalId(idValue.get().getBytes(StandardCharsets.UTF_8));
+          byte[] froidDecoded = codec.decode(globalId.getId().getBytes(StandardCharsets.UTF_8));
           Map data = mapper.readValue(froidDecoded, Map.class);
           data.put(TYPE_NAME, globalId.getType());
           data.put(ID, idValue.get());
@@ -207,14 +209,50 @@ public class Froid {
    * It is highly opinionated on non-padding.
    *
    * @param type the graphql type
-   * @param id   the idS
+   * @param id   the id string
    * @return the global id string
    */
-  public String toGlobalId(String type, String id) {
+  public static String toGlobalId(String type, String id) {
     return base64Encoder.encodeToString((type + ":" + id).getBytes(StandardCharsets.UTF_8));
   }
 
-  public ResolvedGlobalId fromGlobalId(String globalId) {
+  /**
+   * Re-implementing the GlobalId helpers due to incompatibility with graphql-java Relay Encoder.
+   * It is highly opinionated on non-padding.
+   *
+   * @param type the graphql type
+   * @param id   the id byte array
+   * @return the global id string
+   */
+  public static String toGlobalId(String type, byte[] id) {
+    ByteBuffer buffer = ByteBuffer.allocate(type.getBytes().length + id.length + 1);
+    buffer.put(type.getBytes(StandardCharsets.UTF_8));
+    buffer.put(":".getBytes(StandardCharsets.UTF_8));
+    buffer.put(id);
+    return base64Encoder.encodeToString(buffer.array());
+  }
+
+  /**
+   * Decode the ID value into typename and the id string.
+   *
+   * @param globalId the id String
+   * @return the Resolved typename and ID string.
+   */
+  public static ResolvedGlobalId fromGlobalId(String globalId) {
+    String[] split = new String(base64Decoder.decode(globalId), StandardCharsets.UTF_8).split(":", 2);
+    if (split.length != 2) {
+      throw new IllegalArgumentException(String.format("expecting a valid global id, got %s", globalId));
+    }
+    return new ResolvedGlobalId(split[0], split[1]);
+  }
+
+  /**
+   * Decode the ID value into typename and the id string.
+   *
+   * @param globalId the byte[]
+   * @return the Resolved typename and ID string.
+   */
+  public static ResolvedGlobalId fromGlobalId(byte[] globalId) {
     String[] split = new String(base64Decoder.decode(globalId), StandardCharsets.UTF_8).split(":", 2);
     if (split.length != 2) {
       throw new IllegalArgumentException(String.format("expecting a valid global id, got %s", globalId));
